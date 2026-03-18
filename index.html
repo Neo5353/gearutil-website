@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gearutil LLC — Enterprise & Personal Apps, Built Right</title>
+  <meta name="description" content="Gearutil LLC builds the best low-cost enterprise and personal applications with easy maintenance." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/animejs@4.0.2/lib/anime.iife.min.js"></script>
+  <style>
+    :root {
+      --black: #000000;
+      --dark: #0a0a0a;
+      --dark-2: #111111;
+      --dark-3: #1a1a1a;
+      --yellow: #FFD60A;
+      --yellow-dim: #FFD60A33;
+      --yellow-glow: #FFD60A66;
+      --white: #ffffff;
+      --gray: #888888;
+      --gray-light: #aaaaaa;
+      --gray-dark: #333333;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: var(--yellow) var(--dark);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ─────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 1.2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--dark-3);
+      transition: all 0.3s ease;
+    }
+
+    .nav-logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--white);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .nav-logo .gear-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spin 8s linear infinite;
+    }
+
+    .nav-logo .gear-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray-light);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--yellow);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--yellow); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ─────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-grid {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image:
+        linear-gradient(var(--dark-3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--dark-3) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.4;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--yellow-dim) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.2rem;
+      border: 1px solid var(--yellow-dim);
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--yellow);
+      background: rgba(255, 214, 10, 0.05);
+      margin-bottom: 2rem;
+      opacity: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--yellow);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.5); }
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -3px;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 .line {
+      display: block;
+      overflow: hidden;
+    }
+
+    .hero h1 .line-inner {
+      display: block;
+      transform: translateY(110%);
+    }
+
+    .hero h1 .highlight {
+      color: var(--yellow);
+      position: relative;
+    }
+
+    .hero-sub {
+      font-size: 1.25rem;
+      color: var(--gray);
+      max-width: 600px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2.5rem;
+      background: var(--yellow);
+      color: var(--black);
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--yellow-glow);
+    }
+
+    .btn-primary .arrow {
+      transition: transform 0.3s;
+    }
+
+    .btn-primary:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* ── FLOATING SHAPES (hero decoration) ── */
+    .floating-shapes {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .shape {
+      position: absolute;
+      border: 2px solid var(--yellow-dim);
+      opacity: 0;
+    }
+
+    .shape-square {
+      width: 40px; height: 40px;
+      top: 20%; left: 10%;
+    }
+
+    .shape-circle {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      top: 30%; right: 15%;
+    }
+
+    .shape-diamond {
+      width: 25px; height: 25px;
+      top: 60%; left: 8%;
+      transform: rotate(45deg);
+    }
+
+    .shape-triangle {
+      width: 0; height: 0;
+      border: none;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 26px solid var(--yellow-dim);
+      top: 25%; right: 10%;
+    }
+
+    .shape-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      border: none;
+      top: 70%; right: 20%;
+    }
+
+    .shape-ring {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      top: 65%; right: 8%;
+    }
+
+    /* ── SCROLL INDICATOR ─────────────── */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.7rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--yellow), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; height: 40px; }
+      50% { opacity: 0.3; height: 20px; }
+    }
+
+    /* ── SECTIONS (shared) ────────────── */
+    section {
+      padding: 8rem 3rem;
+      position: relative;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--yellow);
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label .line {
+      width: 30px;
+      height: 1px;
+      background: var(--yellow);
+    }
+
+    .section-title {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-desc {
+      font-size: 1.1rem;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 550px;
+    }
+
+    /* ── WHAT WE DO ───────────────────── */
+    #services {
+      background: var(--dark);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .service-card {
+      background: var(--dark-2);
+      border: 1px solid var(--dark-3);
+      border-radius: 16px;
+      padding: 2.5rem;
+      transition: all 0.4s ease;
+      opacity: 0;
+      transform: translateY(40px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .service-card:hover {
+      border-color: var(--yellow-dim);
+      transform: translateY(-4px);
+    }
+
+    .service-card:hover::before { opacity: 1; }
+
+    .service-icon {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--yellow-dim);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+    }
+
+    .service-card:hover .service-icon {
+      background: var(--yellow);
+      border-color: var(--yellow);
+    }
+
+    .service-card:hover .service-icon span {
+      filter: grayscale(1) brightness(0);
+    }
+
+    .service-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+    }
+
+    .service-card p {
+      color: var(--gray);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* ── WHY US (Stats) ───────────────── */
+    #why {
+      background: var(--black);
+    }
+
+    .why-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .stat-card {
+      padding: 2rem;
+      border: 1px solid var(--dark-3);
+      border-radius: 16px;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--yellow-dim);
+      background: var(--dark-2);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--yellow);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.3rem;
+    }
+
+    /* ── PROCESS ──────────────────────── */
+    #process {
+      background: var(--dark);
+    }
+
+    .process-timeline {
+      max-width: 800px;
+      margin: 4rem auto 0;
+      position: relative;
+    }
+
+    .process-timeline::before {
+      content: '';
+      position: absolute;
+      left: 30px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--dark-3);
+    }
+
+    .process-step {
+      display: flex;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+      border: 2px solid var(--yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--yellow);
+      background: var(--dark);
+      position: relative;
+      z-index: 2;
+    }
+
+    .step-content h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ── TECH MARQUEE ─────────────────── */
+    .marquee-section {
+      padding: 3rem 0;
+      background: var(--dark-2);
+      border-top: 1px solid var(--dark-3);
+      border-bottom: 1px solid var(--dark-3);
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 4rem;
+      animation: marquee 30s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-item {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-dark);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .marquee-item .sep {
+      color: var(--yellow);
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── CONTACT / CTA ────────────────── */
+    #contact {
+      background: var(--black);
+      text-align: center;
+      padding: 10rem 2rem;
+    }
+
+    .contact-glow {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--yellow-dim) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .contact-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .contact-content .section-title {
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .email-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 2.5rem;
+      padding: 1.2rem 3rem;
+      border: 2px solid var(--yellow);
+      border-radius: 100px;
+      color: var(--yellow);
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .email-link::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; right: 0; bottom: 0;
+      width: 100%;
+      background: var(--yellow);
+      transition: left 0.4s ease;
+      z-index: -1;
+    }
+
+    .email-link:hover {
+      color: var(--black);
+    }
+
+    .email-link:hover::before {
+      left: 0;
+    }
+
+    /* ── FOOTER ───────────────────────── */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--dark-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    footer a {
+      color: var(--yellow);
+      text-decoration: none;
+    }
+
+    /* ── STAGGER DOTS (animated bg element) ── */
+    .stagger-grid {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 12px;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .stagger-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--yellow);
+      border-radius: 50%;
+    }
+
+    /* ── PARTICLES CANVAS ─────────────── */
+    #particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── RESPONSIVE ───────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 1.5rem; }
+      .why-content { grid-template-columns: 1fr; gap: 3rem; }
+      .hero h1 { letter-spacing: -1px; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Particles background -->
+  <canvas id="particles"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="gear-icon">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FFD60A"/>
+              <stop offset="100%" style="stop-color:#FFB800"/>
+            </linearGradient>
+          </defs>
+          <!-- Mechanical involute gear - 12 teeth -->
+          <path d="M42.9,16.7 L45.6,16.3 L47.0,2.1 L53.0,2.1 L54.4,16.3 L57.1,16.7 A34,34 0 0,1 60.5,17.7 L63.0,18.6 L71.3,7.0 L76.6,10.0 L70.7,23.0 L72.8,24.7 A34,34 0 0,1 75.3,27.2 L77.0,29.3 L90.0,23.4 L93.0,28.7 L81.4,37.0 L82.3,39.5 A34,34 0 0,1 83.3,42.9 L83.7,45.6 L97.9,47.0 L97.9,53.0 L83.7,54.4 L83.3,57.1 A34,34 0 0,1 82.3,60.5 L81.4,63.0 L93.0,71.3 L90.0,76.6 L77.0,70.7 L75.3,72.8 A34,34 0 0,1 72.8,75.3 L70.7,77.0 L76.6,90.0 L71.3,93.0 L63.0,81.4 L60.5,82.3 A34,34 0 0,1 57.1,83.3 L54.4,83.7 L53.0,97.9 L47.0,97.9 L45.6,83.7 L42.9,83.3 A34,34 0 0,1 39.5,82.3 L37.0,81.4 L28.7,93.0 L23.4,90.0 L29.3,77.0 L27.2,75.3 A34,34 0 0,1 24.7,72.8 L23.0,70.7 L10.0,76.6 L7.0,71.3 L18.6,63.0 L17.7,60.5 A34,34 0 0,1 16.7,57.1 L16.3,54.4 L2.1,53.0 L2.1,47.0 L16.3,45.6 L16.7,42.9 A34,34 0 0,1 17.7,39.5 L18.6,37.0 L7.0,28.7 L10.0,23.4 L23.0,29.3 L24.7,27.2 A34,34 0 0,1 27.2,24.7 L29.3,23.0 L23.4,10.0 L28.7,7.0 L37.0,18.6 L39.5,17.7 Z" fill="url(#gearGrad)"/>
+          <!-- Inner cutout -->
+          <circle cx="50" cy="50" r="22" fill="#0a0a0a"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="22" fill="#FFD60A" letter-spacing="-1">GU</text>
+        </svg>
+      </span>
+      Gearutil
+    </a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow"></div>
+
+    <div class="floating-shapes">
+      <div class="shape shape-square"></div>
+      <div class="shape shape-circle"></div>
+      <div class="shape shape-diamond"></div>
+      <div class="shape shape-triangle"></div>
+      <div class="shape shape-dot"></div>
+      <div class="shape shape-ring"></div>
+    </div>
+
+    <div class="hero-logo" style="margin-bottom: 2rem; opacity: 0;">
+      <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gearGradHero" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#FFD60A"/>
+            <stop offset="100%" style="stop-color:#FFB800"/>
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <g filter="url(#glow)">
+          <!-- Mechanical involute gear - 12 teeth -->
+          <path d="M42.9,16.7 L45.6,16.3 L47.0,2.1 L53.0,2.1 L54.4,16.3 L57.1,16.7 A34,34 0 0,1 60.5,17.7 L63.0,18.6 L71.3,7.0 L76.6,10.0 L70.7,23.0 L72.8,24.7 A34,34 0 0,1 75.3,27.2 L77.0,29.3 L90.0,23.4 L93.0,28.7 L81.4,37.0 L82.3,39.5 A34,34 0 0,1 83.3,42.9 L83.7,45.6 L97.9,47.0 L97.9,53.0 L83.7,54.4 L83.3,57.1 A34,34 0 0,1 82.3,60.5 L81.4,63.0 L93.0,71.3 L90.0,76.6 L77.0,70.7 L75.3,72.8 A34,34 0 0,1 72.8,75.3 L70.7,77.0 L76.6,90.0 L71.3,93.0 L63.0,81.4 L60.5,82.3 A34,34 0 0,1 57.1,83.3 L54.4,83.7 L53.0,97.9 L47.0,97.9 L45.6,83.7 L42.9,83.3 A34,34 0 0,1 39.5,82.3 L37.0,81.4 L28.7,93.0 L23.4,90.0 L29.3,77.0 L27.2,75.3 A34,34 0 0,1 24.7,72.8 L23.0,70.7 L10.0,76.6 L7.0,71.3 L18.6,63.0 L17.7,60.5 A34,34 0 0,1 16.7,57.1 L16.3,54.4 L2.1,53.0 L2.1,47.0 L16.3,45.6 L16.7,42.9 A34,34 0 0,1 17.7,39.5 L18.6,37.0 L7.0,28.7 L10.0,23.4 L23.0,29.3 L24.7,27.2 A34,34 0 0,1 27.2,24.7 L29.3,23.0 L23.4,10.0 L28.7,7.0 L37.0,18.6 L39.5,17.7 Z" fill="url(#gearGradHero)"/>
+          <!-- Inner cutout -->
+          <circle cx="50" cy="50" r="22" fill="#000"/>
+          <text x="50" y="57" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-weight="900" font-size="24" fill="#FFD60A" letter-spacing="-1">GU</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Enterprise & Personal Applications
+    </div>
+
+    <h1>
+      <span class="line"><span class="line-inner">Build <span class="highlight">better.</span></span></span>
+      <span class="line"><span class="line-inner">Spend <span class="highlight">less.</span></span></span>
+      <span class="line"><span class="line-inner">Ship <span class="highlight">faster.</span></span></span>
+    </h1>
+
+    <p class="hero-sub">
+      We build enterprise-grade and personal applications at a fraction of the cost — designed for performance, built for easy maintenance.
+    </p>
+
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary">
+        Get in touch <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="sep">◆</span> Web Applications</span>
+      <span class="marquee-item"><span class="sep">◆</span> Mobile Apps</span>
+      <span class="marquee-item"><span class="sep">◆</span> AI Integration</span>
+      <span class="marquee-item"><span class="sep">◆</span> Cloud Infrastructure</span>
+      <span class="marquee-item"><span class="sep">◆</span> API Development</span>
+      <span class="marquee-item"><span class="sep">◆</span> Enterprise Solutions</span>
+      <span class="marquee-item"><span class="sep">◆</span> Low-Cost Architecture</span>
+      <span class="marquee-item"><span class="sep">◆</span> Easy Maintenance</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee-item"><span class="sep">◆</span> Web Applications</span>
+      <span class="marquee-item"><span class="sep">◆</span> Mobile Apps</span>
+      <span class="marquee-item"><span class="sep">◆</span> AI Integration</span>
+      <span class="marquee-item"><span class="sep">◆</span> Cloud Infrastructure</span>
+      <span class="marquee-item"><span class="sep">◆</span> API Development</span>
+      <span class="marquee-item"><span class="sep">◆</span> Enterprise Solutions</span>
+      <span class="marquee-item"><span class="sep">◆</span> Low-Cost Architecture</span>
+      <span class="marquee-item"><span class="sep">◆</span> Easy Maintenance</span>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-label"><span class="line"></span> What We Do</div>
+    <h2 class="section-title">Powerful apps.<br />Minimal cost.</h2>
+    <p class="section-desc">We specialize in building high-quality applications that don't break the bank — or your ops team.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon"><span>🏢</span></div>
+        <h3>Enterprise Applications</h3>
+        <p>Scalable, secure business systems built with modern architecture. ERP integrations, workflow automation, and data platforms — at a fraction of traditional costs.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><span>📱</span></div>
+        <h3>Personal & Consumer Apps</h3>
+        <p>Beautiful, intuitive apps for iOS, Android, and web. From concept to App Store — designed for delight, engineered for performance.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><span>🤖</span></div>
+        <h3>AI-Powered Solutions</h3>
+        <p>Integrate cutting-edge AI into your products. Computer vision, NLP, generative AI, and intelligent automation — practical AI that delivers ROI.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><span>🔧</span></div>
+        <h3>Easy Maintenance</h3>
+        <p>Clean codebases, comprehensive documentation, and simple deployment pipelines. Your team can maintain and extend what we build — no vendor lock-in.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><span>☁️</span></div>
+        <h3>Cloud Architecture</h3>
+        <p>Right-sized cloud infrastructure on AWS, GCP, or Azure. We optimize for cost without sacrificing reliability or security.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon"><span>⚡</span></div>
+        <h3>Rapid Prototyping</h3>
+        <p>Go from idea to working prototype in days, not months. Validate fast, iterate faster, and launch with confidence.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section id="why">
+    <div class="why-content">
+      <div>
+        <div class="section-label"><span class="line"></span> Why Gearutil</div>
+        <h2 class="section-title">Built different.<br />Priced right.</h2>
+        <p class="section-desc">We don't believe great software needs to cost a fortune. Our lean, expert team delivers enterprise quality at startup speed — with codebases your team will actually enjoy maintaining.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" data-value="70">0%</div>
+          <div class="stat-label">Lower Cost</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" data-value="3">0x</div>
+          <div class="stat-label">Faster Delivery</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" data-value="99">0%</div>
+          <div class="stat-label">Uptime SLA</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" data-value="0">$0</div>
+          <div class="stat-label">Vendor Lock-in</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stagger dots decoration -->
+    <div class="stagger-grid" id="staggerGrid"></div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div class="section-label"><span class="line"></span> How We Work</div>
+      <h2 class="section-title">Simple process.<br />Exceptional results.</h2>
+    </div>
+
+    <div class="process-timeline">
+      <div class="process-step">
+        <div class="step-number">01</div>
+        <div class="step-content">
+          <h3>Discovery</h3>
+          <p>We start by understanding your problem deeply. No 50-page requirement docs — just focused conversations that get to the core of what you need built.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">02</div>
+        <div class="step-content">
+          <h3>Architecture</h3>
+          <p>We design lean, scalable systems that cost pennies to run. Every technology choice is intentional — no bloat, no over-engineering, no surprise bills.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">03</div>
+        <div class="step-content">
+          <h3>Build & Iterate</h3>
+          <p>Rapid sprints with real working software every week. You see progress constantly, give feedback early, and course-correct without burning budget.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">04</div>
+        <div class="step-content">
+          <h3>Ship & Support</h3>
+          <p>We deploy with automated CI/CD, hand over clean documentation, and ensure your team can run independently. No endless consulting contracts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-glow"></div>
+    <div class="contact-content">
+      <div class="section-label"><span class="line"></span> Get Started</div>
+      <h2 class="section-title">Ready to build<br />something great?</h2>
+      <p class="section-desc" style="margin: 0 auto 1rem; text-align: center;">
+        Tell us about your project. We'll get back to you within 24 hours.
+      </p>
+      <a href="mailto:management@gearutil.com" class="email-link">
+        ✉ management@gearutil.com
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2026 Gearutil LLC. All rights reserved.</span>
+    <span>Built with precision. <a href="mailto:management@gearutil.com">Get in touch</a>.</span>
+  </footer>
+
+  <script>
+    // ── PARTICLES ──────────────────────────
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const PARTICLE_COUNT = 60;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.3 + 0.1;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 214, 10, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+
+    function drawLines() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(255, 214, 10, ${0.05 * (1 - dist / 150)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      drawLines();
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // ── STAGGER DOTS GRID ──────────────────
+    const grid = document.getElementById('staggerGrid');
+    for (let i = 0; i < 100; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('stagger-dot');
+      grid.appendChild(dot);
+    }
+
+    // ── ANIME.JS ANIMATIONS ───────────────
+    const { animate, stagger, createTimeline } = anime;
+
+    // Hero entrance
+    const heroTL = createTimeline({ defaults: { ease: 'outExpo' } });
+
+    heroTL
+      .add('.hero-logo', {
+        opacity: [0, 1],
+        scale: [0.5, 1],
+        rotate: ['-90deg', '0deg'],
+        duration: 1000,
+        ease: 'outElastic(1, 0.5)',
+      })
+      .add('.hero-badge', {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 800,
+      })
+      .add('.line-inner', {
+        translateY: ['110%', '0%'],
+        duration: 1200,
+        delay: stagger(150),
+      }, '-=600')
+      .add('.hero-sub', {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 800,
+      }, '-=600')
+      .add('.hero-cta', {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 600,
+      }, '-=400')
+      .add('.scroll-indicator', {
+        opacity: [0, 1],
+        duration: 600,
+      }, '-=200');
+
+    // Floating shapes
+    animate('.shape', {
+      opacity: [0, 0.6],
+      duration: 2000,
+      delay: stagger(200, { start: 1000 }),
+    });
+
+    animate('.shape-square', {
+      rotate: [0, 360],
+      translateY: [-20, 20],
+      duration: 6000,
+      loop: true,
+      alternate: true,
+      ease: 'inOutSine',
+    });
+
+    animate('.shape-circle', {
+      scale: [0.8, 1.2],
+      translateX: [-10, 10],
+      duration: 4000,
+      loop: true,
+      alternate: true,
+      ease: 'inOutSine',
+    });
+
+    animate('.shape-diamond', {
+      rotate: [45, 225],
+      translateY: [10, -10],
+      duration: 5000,
+      loop: true,
+      alternate: true,
+      ease: 'inOutSine',
+    });
+
+    animate('.shape-dot', {
+      scale: [1, 2],
+      opacity: [0.6, 0.2],
+      duration: 3000,
+      loop: true,
+      alternate: true,
+      ease: 'inOutSine',
+    });
+
+    animate('.shape-ring', {
+      rotate: [0, -360],
+      scale: [0.9, 1.1],
+      duration: 7000,
+      loop: true,
+      alternate: true,
+      ease: 'inOutSine',
+    });
+
+    // Stagger grid animation
+    animate('.stagger-dot', {
+      scale: [0, 1],
+      opacity: [0, 0.8],
+      delay: stagger(30, { grid: [10, 10], from: 'center' }),
+      duration: 800,
+      loop: true,
+      alternate: true,
+      ease: 'inOutQuad',
+    });
+
+    // ── INTERSECTION OBSERVER ANIMATIONS ───
+    const observerOptions = { threshold: 0.2 };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+
+        // Service cards
+        if (entry.target.classList.contains('service-card')) {
+          animate(entry.target, {
+            opacity: [0, 1],
+            translateY: [40, 0],
+            duration: 800,
+            ease: 'outExpo',
+          });
+        }
+
+        // Stat cards
+        if (entry.target.classList.contains('stat-card')) {
+          animate(entry.target, {
+            opacity: [0, 1],
+            scale: [0.8, 1],
+            duration: 600,
+            ease: 'outBack(1.5)',
+          });
+
+          // Animate number
+          const numEl = entry.target.querySelector('.stat-number');
+          const val = parseInt(numEl.dataset.value);
+          const suffix = numEl.textContent.replace(/[0-9]/g, '');
+          const obj = { val: 0 };
+          animate(obj, {
+            val: [0, val],
+            duration: 1500,
+            ease: 'outExpo',
+            onUpdate: () => {
+              numEl.textContent = Math.round(obj.val) + suffix;
+            },
+          });
+        }
+
+        // Process steps
+        if (entry.target.classList.contains('process-step')) {
+          animate(entry.target, {
+            opacity: [0, 1],
+            translateX: [-30, 0],
+            duration: 800,
+            ease: 'outExpo',
+          });
+        }
+
+        observer.unobserve(entry.target);
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.service-card, .stat-card, .process-step').forEach(el => {
+      observer.observe(el);
+    });
+
+    // ── HERO GLOW FOLLOW MOUSE ─────────────
+    const heroGlow = document.querySelector('.hero-glow');
+    document.querySelector('.hero').addEventListener('mousemove', (e) => {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      animate(heroGlow, {
+        left: x + 'px',
+        top: y + 'px',
+        duration: 1500,
+        ease: 'outExpo',
+      });
+    });
+  </script>
+</body>
+</html>
