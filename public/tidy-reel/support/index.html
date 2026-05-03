@@ -1,47 +1,691 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tidy Reel Support</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tidy Reel Support — Gearutil</title>
+  <meta name="description" content="Support for Tidy Reel — private duplicate photo cleanup for iPhone. Get help with photo permissions, duplicate review, cleanup flow, and privacy questions." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#000; --card:#1a1a1a; --text:#fff; --muted:#8e8e93; --accent:#ffd600; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
-    .wrap { max-width:860px; margin:0 auto; padding:56px 20px; }
-    .card { background:var(--card); border-radius:16px; padding:20px; margin:16px 0; }
-    h1,h2 { margin-top:0; }
-    p,li { color:var(--muted); line-height:1.6; }
-    a { color:var(--accent); }
+    :root {
+      --black: #000;
+      --dark: #0a0a0a;
+      --dark-2: #111;
+      --dark-3: #1a1a1a;
+      --gold: #FFD60A;
+      --gold-dim: rgba(255, 214, 10, 0.14);
+      --white: #fff;
+      --gray: #8f8f93;
+      --gray-light: #c6c6c8;
+      --border: rgba(255,255,255,0.08);
+      --max: 1160px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(circle at center, black 24%, transparent 80%);
+      pointer-events: none;
+      z-index: -3;
+      opacity: 0.5;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,214,10,0.12), transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(255,214,10,0.08), transparent 18%),
+        radial-gradient(circle at 50% 76%, rgba(255,214,10,0.08), transparent 30%);
+      filter: blur(28px);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    a { color: inherit; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .nav-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px rgba(255,214,10,0.16);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-light);
+      font-size: 0.94rem;
+      transition: color 0.25s ease;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta,
+    .button,
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-cta,
+    .button {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 16px 32px rgba(255,214,10,0.18);
+    }
+
+    .nav-cta { padding: 0.8rem 1.1rem; }
+    .button,
+    .button-secondary { padding: 0.95rem 1.35rem; }
+
+    .button-secondary {
+      color: var(--white);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .nav-cta:hover,
+    .button:hover,
+    .button-secondary:hover { transform: translateY(-2px); }
+
+    main { width: 100%; }
+    section { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+    .hero {
+      padding: 5rem 0 3.5rem;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 1.2rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gold-dim);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(255,214,10,0.06);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(255,214,10,0.4);
+    }
+
+    .hero h1 {
+      font-size: clamp(3.1rem, 7vw, 5.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 span { color: var(--gold); }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--gray-light);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1rem;
+      margin-bottom: 5rem;
+    }
+
+    .panel,
+    .card,
+    .faq-card,
+    .cta-band {
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+    }
+
+    .panel {
+      padding: 2rem;
+      min-height: 100%;
+    }
+
+    .panel h2,
+    .section-head h2,
+    .cta-band h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .panel p,
+    .panel li,
+    .card p,
+    .card li,
+    .faq-answer,
+    .cta-band p {
+      color: var(--gray-light);
+      line-height: 1.8;
+    }
+
+    .panel ul,
+    .card ul {
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+      margin-top: 1rem;
+    }
+
+    .panel li::before,
+    .card li::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-right: 0.7rem;
+      vertical-align: middle;
+    }
+
+    .contact-card {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .contact-line {
+      display: block;
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      text-decoration: none;
+    }
+
+    .contact-line strong {
+      display: block;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+
+    .contact-line span {
+      color: var(--gray-light);
+      word-break: break-word;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin: 0 auto 1.8rem;
+      text-align: center;
+    }
+
+    .section-label {
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-head p {
+      color: var(--gray-light);
+      line-height: 1.8;
+      font-size: 1.04rem;
+    }
+
+    .guide-grid,
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 5rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+      min-height: 250px;
+    }
+
+    .card strong {
+      display: block;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      background: rgba(255,214,10,0.1);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 5rem;
+    }
+
+    .faq-card {
+      padding: 1.4rem 1.5rem;
+    }
+
+    .faq-question {
+      color: var(--white);
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-band {
+      text-align: center;
+      margin-bottom: 5rem;
+      padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,214,10,0.06), rgba(255,255,255,0.015));
+    }
+
+    .cta-band p {
+      max-width: 720px;
+      margin: 0 auto 1.5rem;
+      font-size: 1.04rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer {
+      width: min(var(--max), calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.8rem 0 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      color: var(--gray);
+      border-top: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+
+    footer a { color: var(--gray-light); text-decoration: none; }
+    footer a:hover { color: var(--gold); }
+
+    @media (max-width: 980px) {
+      .support-grid,
+      .guide-grid,
+      .topic-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      nav { padding: 0.9rem 1rem; }
+      .nav-links { display: none; }
+      .panel,
+      .card,
+      .faq-card,
+      .cta-band { padding: 1.4rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <h1>Tidy Reel Support</h1>
-    <p>Tidy Reel helps you find and clean duplicate and near-duplicate photos on iPhone while keeping everything on-device.</p>
+  <nav>
+    <a class="nav-logo" href="/tidy-reel/">
+      <img src="/tidy-reel/media/app-logo.png" alt="Tidy Reel logo" />
+      <span>Tidy Reel</span>
+    </a>
 
-    <div class="card">
-      <h2>Need help?</h2>
-      <p>Recommended support contact for App Store listing:</p>
-      <p><a href="mailto:tidyreel-support@gearutil.com">tidyreel-support@gearutil.com</a></p>
-    </div>
+    <ul class="nav-links">
+      <li><a href="/tidy-reel/">Overview</a></li>
+      <li><a href="#topics">Help Topics</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="/tidy-reel/privacy/">Privacy</a></li>
+    </ul>
 
-    <div class="card">
-      <h2>Common topics</h2>
-      <ul>
-        <li>How Limited Photos access works</li>
-        <li>How to upgrade from Limited Access to Full Access</li>
-        <li>How sensitivity affects matching</li>
-        <li>How cleanup limits work for the free plan</li>
-        <li>How to manage subscriptions</li>
-      </ul>
-    </div>
+    <a class="nav-cta" href="mailto:tidyreel-support@gearutil.com">Email Support</a>
+  </nav>
 
-    <div class="card">
-      <h2>Privacy</h2>
-      <p>All photo analysis happens on-device. Tidy Reel does not upload your photos for duplicate detection.</p>
-      <p><a href="/tidy-reel/privacy/">Read the privacy policy</a></p>
-    </div>
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span class="dot"></span> Tidy Reel support</div>
+      <h1>Get help fast. <span>Stay in control of your cleanup.</span></h1>
+      <p>
+        Tidy Reel is built to keep duplicate cleanup private, understandable, and user-controlled.
+        If you need help with photo permissions, review flow, sensitivity settings, or the sorting
+        workflow, this page covers the essentials.
+      </p>
+      <div class="hero-actions">
+        <a class="button" href="mailto:tidyreel-support@gearutil.com">Contact support</a>
+        <a class="button-secondary" href="/tidy-reel/privacy/">Read privacy policy</a>
+      </div>
+    </section>
+
+    <section class="support-grid">
+      <div class="panel">
+        <div class="section-label">Support contact</div>
+        <h2>Need help with Tidy Reel?</h2>
+        <p>
+          If something is unclear or not working the way you expect, reach out and describe the
+          issue, the cleanup step you were on, and whether you were using Full Photo Access or
+          Limited Photos access. That makes it much faster to help.
+        </p>
+        <ul>
+          <li>Include what you were trying to do</li>
+          <li>Mention whether the issue happened during scan, review, or sorting</li>
+          <li>Tell us if you were using Limited Photos access</li>
+        </ul>
+      </div>
+
+      <div class="panel contact-card">
+        <a class="contact-line" href="mailto:tidyreel-support@gearutil.com">
+          <strong>Email support</strong>
+          <span>tidyreel-support@gearutil.com</span>
+        </a>
+        <a class="contact-line" href="/tidy-reel/privacy/">
+          <strong>Privacy details</strong>
+          <span>Read how Tidy Reel handles photo access and on-device processing.</span>
+        </a>
+        <a class="contact-line" href="/tidy-reel/">
+          <strong>Product overview</strong>
+          <span>See the full feature walkthrough and duplicate cleanup flow.</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="section-label">How to use Tidy Reel</div>
+        <h2>Clear steps from scan setup to actual deletion.</h2>
+        <p>
+          Tidy Reel helps you identify and organize duplicate decisions, but final deletion still
+          happens in Apple Photos. Use this flow if you want the safest cleanup process.
+        </p>
+      </div>
+
+      <div class="guide-grid">
+        <article class="card">
+          <span class="step-number">01</span>
+          <strong>Choose what Tidy Reel can scan</strong>
+          <p>Grant Full Photo Access or Limited Photos access before scanning.</p>
+          <ul>
+            <li>With Limited Photos access, Tidy Reel only scans the photos you selected</li>
+            <li>If Limited access is on but no photos are selected, choose photos first</li>
+            <li>You can manage the selected subset later from Settings</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="step-number">02</span>
+          <strong>Set the right sensitivity</strong>
+          <p>Choose a scan level based on how broad you want matching to be.</p>
+          <ul>
+            <li>Low: fastest and safest for exact duplicates</li>
+            <li>Medium: balanced for common duplicates with minor edits</li>
+            <li>High / Maximum: broader matching for crops and similar shots, but slower and stricter review needed</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="step-number">03</span>
+          <strong>Review each duplicate group</strong>
+          <p>Open a group and decide what should happen before sorting.</p>
+          <ul>
+            <li>Tap the photo you want to keep if you disagree with the recommendation</li>
+            <li>Zoom in to compare sharpness and detail</li>
+            <li>Use Ignore Group if you want to skip that set until the next full rescan</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="step-number">04</span>
+          <strong>Sort into albums</strong>
+          <p>Tidy Reel organizes your decision into two albums after review.</p>
+          <ul>
+            <li>Your keep-photo is added to "Tidy Reel Selected"</li>
+            <li>The remaining photos from that group are added to "Tidy Reel Duplicates"</li>
+            <li>This step does not delete photos from your library</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="step-number">05</span>
+          <strong>Actually delete duplicates</strong>
+          <p>Deletion is done in Apple Photos after Tidy Reel finishes organizing.</p>
+          <ul>
+            <li>Open Photos → Albums → "Tidy Reel Duplicates"</li>
+            <li>Review those photos again, then delete them in Photos</li>
+            <li>Open Recently Deleted in Photos if you want to permanently remove them right away</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <span class="step-number">06</span>
+          <strong>When to rescan</strong>
+          <p>Run a fresh scan after major photo-library changes.</p>
+          <ul>
+            <li>Rescan after deleting, importing, or heavily editing photos</li>
+            <li>Ignored groups come back only after a full Scan Again run</li>
+            <li>A fresh scan gives the most accurate current state</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="topics">
+      <div class="section-head">
+        <div class="section-label">Help topics</div>
+        <h2>The most common Tidy Reel questions, in one place.</h2>
+        <p>
+          These are the core parts of the experience most people ask about: permissions, duplicate
+          matching, choosing a keep-photo, and what actually happens when you sort a group.
+        </p>
+      </div>
+
+      <div class="topic-grid">
+        <article class="card">
+          <strong>Photo access</strong>
+          <p>Tidy Reel supports both Full Photo Access and Limited Photos access.</p>
+          <ul>
+            <li>With Limited Access, the app only sees the photos you approved</li>
+            <li>You can manage the approved subset from inside the app</li>
+            <li>You can upgrade to Full Access later from iPhone Settings</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <strong>Matching sensitivity</strong>
+          <p>Sensitivity changes how broad the duplicate scan should be.</p>
+          <ul>
+            <li>Lower settings focus on safer, more obvious duplicate matches</li>
+            <li>Higher settings broaden matching to catch more similar photos</li>
+            <li>Useful for bursts, reframed shots, and lightly edited copies</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <strong>Review + keep-photo choice</strong>
+          <p>Tidy Reel recommends a best shot, but you can override it.</p>
+          <ul>
+            <li>Zoom in to inspect sharpness and detail</li>
+            <li>Tap another photo if you want to keep a different one</li>
+            <li>Your chosen keep-photo stays separate from the app’s recommendation</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <strong>What “Sort to Albums” does</strong>
+          <p>Tidy Reel does not hide what happened after review.</p>
+          <ul>
+            <li>Your chosen photo goes to the selected album</li>
+            <li>The duplicate set goes to the duplicates album</li>
+            <li>Nothing is deleted yet — the albums are the handoff for your final review in Photos</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <strong>Privacy</strong>
+          <p>Tidy Reel is built around on-device processing.</p>
+          <ul>
+            <li>No photo uploads to Gearutil for duplicate detection</li>
+            <li>No account required for core functionality</li>
+            <li>No external service needed to compare your photo library</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <strong>If something looks wrong</strong>
+          <p>Sometimes the photo library may change during or after a scan.</p>
+          <ul>
+            <li>If the library changed, some results may no longer match the current state</li>
+            <li>In that case, run a fresh scan for the most accurate view</li>
+            <li>If you are stuck, email support with what screen you were on</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="faq" class="faq-list">
+      <div class="section-head">
+        <div class="section-label">FAQ</div>
+        <h2>Quick answers to the main support questions.</h2>
+      </div>
+
+      <article class="faq-card">
+        <div class="faq-question">Does Tidy Reel upload my photos?</div>
+        <div class="faq-answer">No. Tidy Reel is designed to process duplicate matching and review on-device. Your photos are not uploaded to Gearutil for duplicate detection.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">Can I use Tidy Reel with Limited Photos access?</div>
+        <div class="faq-answer">Yes. If you grant Limited Photos access, Tidy Reel only works with the subset of photos you approved, and you can manage that approved set from the app.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">What if I disagree with the auto-picked best photo?</div>
+        <div class="faq-answer">You can override it. Tidy Reel recommends a keep-photo, but the final choice stays with you.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">What happens after I tap Sort to Albums?</div>
+        <div class="faq-answer">Tidy Reel sorts your chosen photo into the selected album and the duplicates into the duplicates album, so the outcome remains easy to inspect. It does not delete anything at that step.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">How do I actually delete the duplicates?</div>
+        <div class="faq-answer">Open Apple Photos, go to Albums, open "Tidy Reel Duplicates," review those photos, and delete them there. If you want them gone immediately, also clear them from Recently Deleted in Photos.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">What if I chose Limited Photos access but did not select any photos?</div>
+        <div class="faq-answer">Choose photos first using the Limited Photos picker or allow more access in Settings. Tidy Reel needs at least one selected photo before it can run a meaningful scan.</div>
+      </article>
+
+      <article class="faq-card">
+        <div class="faq-question">What should I send if I contact support?</div>
+        <div class="faq-answer">Include what you were trying to do, whether the issue happened during scan, review, or sorting, and whether you were using Full Photo Access or Limited Photos access.</div>
+      </article>
+    </section>
+
+    <section class="cta-band">
+      <h2>Still stuck?</h2>
+      <p>
+        Send a short description of the issue and what step you were on. We’ll use that to help you faster and avoid sending you generic answers.
+      </p>
+      <div class="cta-actions">
+        <a class="button" href="mailto:tidyreel-support@gearutil.com">Email support</a>
+        <a class="button-secondary" href="/tidy-reel/">Back to Tidy Reel overview</a>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <span>© 2026 Gearutil LLC. All rights reserved.</span>
+    <span>Built with precision. <a href="mailto:tidyreel-support@gearutil.com">Get in touch</a>.</span>
+  </footer>
 </body>
 </html>

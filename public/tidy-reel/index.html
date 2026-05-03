@@ -1,52 +1,873 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tidy Reel</title>
-  <meta name="description" content="Private duplicate photo cleaner for iPhone." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tidy Reel — Private Duplicate Photo Cleanup for iPhone</title>
+  <meta name="description" content="Tidy Reel helps you find duplicate and near-duplicate photos on iPhone, compare them in detail, keep the best shot, and sort the rest for cleanup — fully on-device." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    :root { --bg:#000; --card:#1a1a1a; --text:#fff; --muted:#8e8e93; --accent:#ffd600; }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--text); }
-    .wrap { max-width:860px; margin:0 auto; padding:56px 20px; }
-    .hero { text-align:center; padding:48px 0; }
-    .logo { width:88px; height:88px; border-radius:24px; margin:0 auto 18px; background:linear-gradient(180deg,#ffd600,#ffbf00); color:#000; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:28px; }
-    h1 { margin:0 0 10px; font-size:40px; }
-    .sub { color:var(--muted); font-size:18px; margin:0 auto 24px; max-width:620px; }
-    .cta { display:inline-block; padding:14px 22px; border-radius:999px; background:var(--accent); color:#000; text-decoration:none; font-weight:700; }
-    .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); margin-top:36px; }
-    .card { background:var(--card); border-radius:16px; padding:18px; }
-    h2 { margin-top:40px; }
-    ul { color:var(--muted); line-height:1.6; }
-    p { color:var(--muted); line-height:1.6; }
-    a { color:var(--accent); }
+    :root {
+      --black: #000;
+      --dark: #0a0a0a;
+      --dark-2: #111;
+      --dark-3: #1a1a1a;
+      --gold: #FFD60A;
+      --gold-dim: rgba(255, 214, 10, 0.14);
+      --gold-line: rgba(255, 214, 10, 0.28);
+      --white: #fff;
+      --gray: #8f8f93;
+      --gray-light: #c6c6c8;
+      --border: rgba(255,255,255,0.08);
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(circle at center, black 25%, transparent 80%);
+      pointer-events: none;
+      z-index: -3;
+      opacity: 0.5;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 18%, rgba(255,214,10,0.12), transparent 24%),
+        radial-gradient(circle at 82% 22%, rgba(255,214,10,0.08), transparent 18%),
+        radial-gradient(circle at 50% 76%, rgba(255,214,10,0.08), transparent 30%);
+      filter: blur(28px);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    a { color: inherit; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.9rem;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .nav-logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px rgba(255,214,10,0.16);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-light);
+      font-size: 0.94rem;
+      transition: color 0.25s ease;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta,
+    .primary-button,
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-cta,
+    .primary-button {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 16px 32px rgba(255,214,10,0.18);
+    }
+
+    .nav-cta { padding: 0.8rem 1.1rem; }
+    .primary-button,
+    .secondary-button { padding: 0.95rem 1.35rem; }
+
+    .secondary-button {
+      color: var(--white);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .nav-cta:hover,
+    .primary-button:hover,
+    .secondary-button:hover { transform: translateY(-2px); }
+
+    main { width: 100%; }
+    section { width: min(var(--max), calc(100% - 2rem)); margin: 0 auto; }
+
+    .hero {
+      padding: 5rem 0 3rem;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 1.2rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gold-dim);
+      border-radius: 999px;
+      color: var(--gold);
+      background: rgba(255,214,10,0.06);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .eyebrow .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(255,214,10,0.4);
+    }
+
+    .hero h1 {
+      font-size: clamp(3.2rem, 7vw, 6.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+      margin-bottom: 1.3rem;
+    }
+
+    .hero h1 span { color: var(--gold); }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 auto;
+      color: var(--gray-light);
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .hero-strip {
+      margin-top: 2.4rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .hero-stat {
+      padding: 1rem 1.1rem;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+      text-align: left;
+    }
+
+    .hero-stat strong {
+      display: block;
+      color: var(--gold);
+      font-size: 1.08rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .hero-stat span {
+      color: var(--gray);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .scroll-morph {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 2rem;
+      align-items: start;
+      margin: 2rem auto 7rem;
+    }
+
+    .sticky-stage {
+      position: sticky;
+      top: 110px;
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stage-shell {
+      position: relative;
+      width: min(100%, 520px);
+      min-height: 720px;
+      border-radius: 36px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      overflow: hidden;
+      padding: 2rem;
+      box-shadow: 0 34px 80px rgba(0,0,0,0.45);
+    }
+
+    .stage-shell::before {
+      content: '';
+      position: absolute;
+      inset: auto 10% 8% 10%;
+      height: 24%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,214,10,0.22), transparent 70%);
+      filter: blur(18px);
+    }
+
+    .stage-phone {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 320px);
+      margin: 0 auto;
+      aspect-ratio: 9 / 19.5;
+      border-radius: 34px;
+      padding: 12px;
+      background: linear-gradient(180deg, #1d1d1f, #0b0b0c);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 26px 50px rgba(0,0,0,0.42), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+
+    .stage-phone::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+      height: 20px;
+      border-radius: 0 0 14px 14px;
+      background: #030303;
+      z-index: 3;
+    }
+
+    .stage-phone img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+      display: block;
+    }
+
+    .stage-copy {
+      position: relative;
+      z-index: 2;
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .stage-copy .mini-label {
+      color: var(--gold);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    .stage-copy h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.8rem;
+    }
+
+    .stage-copy p {
+      color: var(--gray-light);
+      line-height: 1.75;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .stage-indicators {
+      margin-top: 1.4rem;
+      display: inline-flex;
+      gap: 0.55rem;
+    }
+
+    .stage-indicators span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.25s ease;
+    }
+
+    .stage-indicators span.active {
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(255,214,10,0.35);
+      transform: scale(1.1);
+    }
+
+    .story-rail {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .story-step {
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+    }
+
+    .story-card {
+      width: 100%;
+      padding: 2rem;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      transition: border-color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+    }
+
+    .story-step.active .story-card {
+      border-color: var(--gold-line);
+      background: linear-gradient(180deg, rgba(255,214,10,0.08), rgba(255,255,255,0.02));
+      transform: translateY(-4px);
+    }
+
+    .story-card .step-index {
+      display: inline-flex;
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .story-card h3 {
+      font-size: clamp(1.9rem, 3.4vw, 3rem);
+      line-height: 1.04;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .story-card p {
+      color: var(--gray-light);
+      line-height: 1.85;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .story-card ul {
+      list-style: none;
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+    }
+
+    .story-card li {
+      color: var(--gray-light);
+      line-height: 1.7;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .story-card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.72rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .showcase-section,
+    .privacy-section,
+    .cta-band {
+      margin-bottom: 6rem;
+      padding: 2.25rem;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    }
+
+    .showcase-section {
+      overflow: hidden;
+    }
+
+    .showcase-head {
+      max-width: 760px;
+      margin-bottom: 1.8rem;
+    }
+
+    .showcase-head h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .showcase-head p {
+      color: var(--gray-light);
+      line-height: 1.8;
+      font-size: 1.04rem;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .showcase-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 240px;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      box-shadow: 0 20px 40px rgba(0,0,0,0.22);
+    }
+
+    .showcase-card.large { grid-column: span 7; min-height: 360px; }
+    .showcase-card.medium { grid-column: span 5; min-height: 360px; }
+    .showcase-card.small { grid-column: span 4; }
+
+    .showcase-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .showcase-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 38%, rgba(0,0,0,0.16) 62%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+    }
+
+    .showcase-copy {
+      position: absolute;
+      left: 1.25rem;
+      right: 1.25rem;
+      bottom: 1.1rem;
+      z-index: 2;
+    }
+
+    .showcase-copy strong {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 0.45rem;
+      letter-spacing: -0.03em;
+    }
+
+    .showcase-copy span {
+      color: rgba(255,255,255,0.82);
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+
+    .privacy-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .privacy-section h2,
+    .cta-band h2 {
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .privacy-section p,
+    .privacy-section li,
+    .cta-band p {
+      color: var(--gray-light);
+      line-height: 1.8;
+    }
+
+    .privacy-section ul {
+      list-style: none;
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .privacy-section li::before {
+      content: '✓';
+      color: var(--gold);
+      margin-right: 0.7rem;
+    }
+
+    .cta-band {
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,214,10,0.06), rgba(255,255,255,0.015));
+    }
+
+    .cta-band p {
+      max-width: 720px;
+      margin: 0 auto 1.5rem;
+      font-size: 1.05rem;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer {
+      width: min(var(--max), calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 1.8rem 0 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      color: var(--gray);
+      border-top: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+
+    footer a { color: var(--gray-light); text-decoration: none; }
+    footer a:hover { color: var(--gold); }
+
+    @media (max-width: 1080px) {
+      .scroll-morph,
+      .privacy-section {
+        grid-template-columns: 1fr;
+      }
+
+      .sticky-stage {
+        position: relative;
+        top: 0;
+        min-height: auto;
+      }
+
+      .stage-shell { min-height: auto; }
+      .story-step { min-height: auto; }
+      .showcase-card.large,
+      .showcase-card.medium,
+      .showcase-card.small { grid-column: span 12; }
+    }
+
+    @media (max-width: 760px) {
+      nav { padding: 0.9rem 1rem; }
+      .nav-links { display: none; }
+      .hero-strip { grid-template-columns: 1fr; }
+      .hero { padding-top: 3.5rem; }
+      .stage-shell { padding: 1.2rem; }
+      .story-card,
+      .showcase-section,
+      .privacy-section,
+      .cta-band { padding: 1.4rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="hero">
-      <div class="logo">TR</div>
-      <h1>Tidy Reel</h1>
-      <p class="sub">A private duplicate photo cleaner for iPhone. Find duplicate and near-duplicate photos, review the best shot, and clean up your library — all on-device.</p>
-      <a class="cta" href="/tidy-reel/support/">Support</a>
-    </section>
+  <nav>
+    <a class="nav-logo" href="/">
+      <img src="/tidy-reel/media/app-logo.png" alt="Tidy Reel logo" />
+      <span>Tidy Reel</span>
+    </a>
 
-    <section class="grid">
-      <div class="card"><strong>On-device only</strong><p>No cloud uploads. No external photo processing.</p></div>
-      <div class="card"><strong>Smart duplicate detection</strong><p>Find duplicate and near-duplicate photos, including lightly edited and reframed copies.</p></div>
-      <div class="card"><strong>Best shot selection</strong><p>Highlights the strongest photo in each group using quality scoring.</p></div>
-    </section>
-
-    <h2>Features</h2>
-    <ul>
-      <li>Duplicate and near-duplicate photo detection</li>
-      <li>Adjustable sensitivity</li>
-      <li>Limited Access and Full Access support</li>
-      <li>Manage selected photos for Limited Access</li>
-      <li>Review before cleanup</li>
-      <li>Privacy-first design</li>
+    <ul class="nav-links">
+      <li><a href="#story">Features</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+      <li><a href="/tidy-reel/support/">Support</a></li>
     </ul>
+
+    <a class="nav-cta" href="/tidy-reel/support/">Get Support</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span class="dot"></span> Private duplicate photo cleanup for iPhone</div>
+      <h1>Scroll through the cleanup flow. <span>See exactly what Tidy Reel does.</span></h1>
+      <p>
+        Tidy Reel helps you find duplicate and near-duplicate photos, compare them closely, choose the shot you actually want to keep, and sort the rest for cleanup — all without sending your photo library anywhere.
+      </p>
+      <div class="hero-actions">
+        <a class="primary-button" href="#story">Explore the flow</a>
+        <a class="secondary-button" href="/tidy-reel/privacy/">Privacy policy</a>
+      </div>
+      <div class="hero-strip">
+        <div class="hero-stat">
+          <strong>100% On-device</strong>
+          <span>No cloud uploads. No photo sync to external servers. No account needed.</span>
+        </div>
+        <div class="hero-stat">
+          <strong>Smart matching</strong>
+          <span>Find exact duplicates, near-duplicates, reframed shots, and light edits.</span>
+        </div>
+        <div class="hero-stat">
+          <strong>Review-first</strong>
+          <span>Zoom in, override the keep-photo, and stay in control of every decision.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="scroll-morph" id="story">
+      <div class="sticky-stage">
+        <div class="stage-shell">
+          <div class="stage-phone">
+            <img id="stageImage" src="/tidy-reel/media/shot-home.jpg" alt="Tidy Reel feature preview" />
+          </div>
+          <div class="stage-copy">
+            <div class="mini-label" id="stageLabel">Step 01</div>
+            <h2 id="stageTitle">Start from a clean, simple home screen.</h2>
+            <p id="stageText">Tidy Reel opens with a focused entry point: scan your library, pick up where you left off, and jump straight into cleanup without noise.</p>
+            <div class="stage-indicators" id="stageIndicators">
+              <span class="active"></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="story-rail">
+        <article class="story-step active" data-label="Step 01" data-title="Start from a clean, simple home screen." data-text="Tidy Reel opens with a focused entry point: scan your library, pick up where you left off, and jump straight into cleanup without noise." data-image="/tidy-reel/media/shot-home.jpg">
+          <div class="story-card">
+            <div class="step-index">Step 01 — Home</div>
+            <h3>Begin with a focused cleanup workflow.</h3>
+            <p>
+              Tidy Reel is designed to feel calm instead of cluttered. The entry screen is there to get you into cleanup fast: scan the library, revisit the previous scan, and move directly into review.
+            </p>
+            <ul>
+              <li>Simple launch point with minimal friction</li>
+              <li>Fast return to the latest scan state</li>
+              <li>Settings available without getting in the way</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="story-step" data-label="Step 02" data-title="Scan for duplicates and similar shots." data-text="Tidy Reel goes beyond exact copies and can surface near-duplicates, lightly edited photos, reframed shots, and more depending on the scan sensitivity you choose." data-image="/tidy-reel/media/shot-scan.jpg">
+          <div class="story-card">
+            <div class="step-index">Step 02 — Scan</div>
+            <h3>Find duplicate and near-duplicate photos, not just perfect copies.</h3>
+            <p>
+              Camera rolls usually get messy from bursts, repeated attempts, slightly reframed shots, and quick edits. Tidy Reel is tuned to catch those patterns so the app reflects how people actually take photos.
+            </p>
+            <ul>
+              <li>Exact duplicate matching</li>
+              <li>Near-duplicate grouping for similar captures</li>
+              <li>Sensitivity controls for safer or broader cleanup</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="story-step" data-label="Step 03" data-title="Review grouped duplicates with a recommended best photo." data-text="Each duplicate set is grouped together, and Tidy Reel highlights the strongest candidate so you can move faster without handing over the final decision." data-image="/tidy-reel/media/shot-results.jpg">
+          <div class="story-card">
+            <div class="step-index">Step 03 — Results</div>
+            <h3>See grouped results instead of a giant unsorted dump.</h3>
+            <p>
+              Once the scan finishes, Tidy Reel presents grouped duplicates and similar shots in a way that makes decisions faster. You can review one set at a time instead of trying to clean the entire library blindly.
+            </p>
+            <ul>
+              <li>Clear duplicate groups</li>
+              <li>Recommended best-shot selection</li>
+              <li>Structured flow from scan to action</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="story-step" data-label="Step 04" data-title="Compare photos closely and override the keep-photo if needed." data-text="Zoom in, inspect small differences, and choose a different keep-photo when the app’s recommendation isn’t the one you want. The app keeps both signals visually distinct." data-image="/tidy-reel/media/shot-compare.jpg">
+          <div class="story-card">
+            <div class="step-index">Step 04 — Compare</div>
+            <h3>Inspect the details before you decide what stays.</h3>
+            <p>
+              Similar photos often differ in subtle ways: one is sharper, one has a better expression, one preserves more detail. Tidy Reel gives you a compare screen built for that kind of judgment.
+            </p>
+            <ul>
+              <li>Pinch-to-zoom and drag while zoomed</li>
+              <li>Double-tap zoom/reset</li>
+              <li>Border stays on the auto-picked image while the checkmark follows your chosen keep-photo</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="story-step" data-label="Step 05" data-title="Sort the chosen photo and duplicates into albums for cleanup." data-text="Tidy Reel keeps the workflow reversible and easy to inspect by sorting the chosen photo and duplicates into separate albums, instead of making hidden decisions in the background." data-image="/tidy-reel/media/shot-best.jpg">
+          <div class="story-card">
+            <div class="step-index">Step 05 — Cleanup</div>
+            <h3>Finish with a cleanup flow that stays understandable.</h3>
+            <p>
+              Tidy Reel helps you move through the final step with clarity. After review, your chosen photo and the duplicate set are sorted into separate albums so the result remains visible and easy to audit.
+            </p>
+            <ul>
+              <li>Chosen photo goes to the selected album</li>
+              <li>Duplicates go to the duplicate album</li>
+              <li>Designed to support careful cleanup instead of blind deletion</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="showcase-section">
+      <div class="showcase-head">
+        <div class="eyebrow" style="margin-bottom:1rem;"><span class="dot"></span> Real image sets</div>
+        <h2>See the kinds of duplicate moments Tidy Reel is built to handle.</h2>
+        <p>
+          I wired in the screenshots plus the example image sets from your <code>pictures</code> folder so the page renders as a complete product story. These examples make the cleanup use case feel concrete instead of abstract.
+        </p>
+      </div>
+
+      <div class="showcase-grid">
+        <figure class="showcase-card large">
+          <img src="/tidy-reel/pictures/soccer1.png" alt="Soccer photo example" />
+          <figcaption class="showcase-copy">
+            <strong>Fast sequences, tiny differences</strong>
+            <span>Sports bursts can leave you with many near-identical frames. Tidy Reel helps surface those clusters quickly.</span>
+          </figcaption>
+        </figure>
+
+        <figure class="showcase-card medium">
+          <img src="/tidy-reel/pictures/wedding1.png" alt="Wedding photo example" />
+          <figcaption class="showcase-copy">
+            <strong>Important memories need careful review</strong>
+            <span>For meaningful moments, the compare flow lets you zoom in and keep the exact image you want.</span>
+          </figcaption>
+        </figure>
+
+        <figure class="showcase-card small">
+          <img src="/tidy-reel/pictures/dog02.png" alt="Dog photo example" />
+          <figcaption class="showcase-copy">
+            <strong>Pets</strong>
+            <span>Lots of almost-the-same shots from one session.</span>
+          </figcaption>
+        </figure>
+
+        <figure class="showcase-card small">
+          <img src="/tidy-reel/pictures/stork2.png" alt="Bird photo example" />
+          <figcaption class="showcase-copy">
+            <strong>Wildlife</strong>
+            <span>Small framing changes, same core subject.</span>
+          </figcaption>
+        </figure>
+
+        <figure class="showcase-card small">
+          <img src="/tidy-reel/pictures/grad2.png" alt="Graduation photo example" />
+          <figcaption class="showcase-copy">
+            <strong>Milestones</strong>
+            <span>Review groups before sorting anything away.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="privacy" class="privacy-section">
+      <div>
+        <div class="eyebrow" style="margin-bottom:1rem;"><span class="dot"></span> Privacy-first by design</div>
+        <h2>Your photo library stays on your iPhone.</h2>
+        <p>
+          Tidy Reel was built around a basic principle: private photo cleanup should stay private. The app analyzes similarity and image quality on-device, so your photos are not uploaded to Gearutil or passed through outside AI services.
+        </p>
+      </div>
+      <div>
+        <ul>
+          <li>No login, account creation, or backend dependency for core use.</li>
+          <li>No photo uploads or cloud processing pipeline.</li>
+          <li>Supports both Full Photo Access and Limited Photos access.</li>
+          <li>Lets you review every duplicate group before taking action.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <h2>Private cleanup. Less clutter. Better control.</h2>
+      <p>
+        Tidy Reel is designed for people who want a cleaner camera roll without surrendering their library to a cloud service. If you want support or release details, use the links below.
+      </p>
+      <div class="cta-actions">
+        <a class="primary-button" href="/tidy-reel/support/">Contact support</a>
+        <a class="secondary-button" href="/tidy-reel/privacy/">Read privacy policy</a>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <span>© 2026 Gearutil LLC. All rights reserved.</span>
+    <span>Built with precision. <a href="mailto:admin@gearutil.com">Get in touch</a>.</span>
+  </footer>
+
+  <script>
+    const steps = Array.from(document.querySelectorAll('.story-step'));
+    const stageImage = document.getElementById('stageImage');
+    const stageLabel = document.getElementById('stageLabel');
+    const stageTitle = document.getElementById('stageTitle');
+    const stageText = document.getElementById('stageText');
+    const indicators = Array.from(document.querySelectorAll('#stageIndicators span'));
+
+    function activateStep(step) {
+      steps.forEach((item) => item.classList.toggle('active', item === step));
+      const index = steps.indexOf(step);
+      stageImage.src = step.dataset.image;
+      stageLabel.textContent = step.dataset.label;
+      stageTitle.textContent = step.dataset.title;
+      stageText.textContent = step.dataset.text;
+      indicators.forEach((dot, i) => dot.classList.toggle('active', i === index));
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+      if (visible[0]) activateStep(visible[0].target);
+    }, {
+      threshold: [0.35, 0.55, 0.75],
+      rootMargin: '-10% 0px -25% 0px'
+    });
+
+    steps.forEach((step) => observer.observe(step));
+  </script>
 </body>
 </html>
